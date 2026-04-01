@@ -17,7 +17,6 @@ public class DigitScrubberTest {
     }
 
     @Test
-    @DisplayName("Should throw NullPointerException when input is null")
     void testScrub_NullInput_ThrowsException() {
         assertThrows(NullPointerException.class, () -> scrubber.scrub(null));
     }
