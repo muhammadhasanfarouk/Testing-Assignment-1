@@ -1,5 +1,3 @@
-package Tests;
-
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -35,12 +33,21 @@ class MainScrubberTest {
         verify(emailMock, times(1)).scrub(anyString());
     }
 
-//    @Test
-//    void testScrub_OnlyDigits_DoesNotCallEmailScrubber() {
-//        String input = "123";
-//        mainScrubber.scrub(input, ScrubMode.ONLY_DIGITS);
-//
-//        verify(digitMock, times(1)).scrub(input);
-//        verifyNoInteractions(emailMock);
-//    }
+    @Test
+    void testScrub_OnlyDigits_DoesNotCallEmailScrubber() {
+        String input = "123";
+        mainScrubber.scrub(input, ScrubMode.ONLY_DIGITS);
+
+        verify(digitMock, times(1)).scrub(input);
+        verifyNoInteractions(emailMock);
+    }
+
+    @Test
+    void testScrub_OnlyMail_DoesNotCallDigitScrubber() {
+        String input = "user@test.com";
+        mainScrubber.scrub(input, ScrubMode.ONLY_EMAILS);
+
+        verify(emailMock, times(1)).scrub(input);
+        verifyNoInteractions(digitMock);
+    }
 }
