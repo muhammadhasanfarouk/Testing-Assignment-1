@@ -1,0 +1,9 @@
+# Ignore IDE-specific files
+.idea/
+.vscode/
+
+# Ignore Maven build output
+target/
+
+# Ignore other unnecessary files
+*.iml
