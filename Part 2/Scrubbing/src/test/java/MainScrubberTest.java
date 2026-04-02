@@ -28,9 +28,9 @@ class MainScrubberTest {
         String result = mainScrubber.scrub(input, ScrubMode.FULL_SCRUBBING);
 
         assertEquals("[EMAIL_HIDDEN] XXX", result);
-        // Behavioral Verification
+
         verify(digitMock, times(1)).scrub(input);
-        verify(emailMock, times(1)).scrub(anyString());
+        verify(emailMock, times(1)).scrub("user@test.com XXX");
     }
 
     @Test
