@@ -1,0 +1,6 @@
+**/.idea/
+**/.vscode/
+**/target/
+
+# Ignore IntelliJ module files
+*.iml
