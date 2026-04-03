@@ -18,28 +18,32 @@ class MainScrubberTest {
 
     @InjectMocks private MainScrubber mainScrubber;
 
-    //  Exceptions 
+    //  Null Input Tests
 
     @Test
-    void scrub_nullInput_throwsException() {
-        assertThrows(NullPointerException.class,
-                () -> mainScrubber.scrub(null, ScrubMode.FULL_SCRUBBING));
+    void testScrub_nullInput_returnsNull() {
+        String result = mainScrubber.scrub(null, ScrubMode.FULL_SCRUBBING);
+        assertNull(result);
+        verifyNoInteractions(digitMock, emailMock);
     }
     // blank input tests
     @Test
-    void scrub_emptyInput_throwsException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> mainScrubber.scrub("", ScrubMode.FULL_SCRUBBING));
+    void testScrub_emptyInput_returnsNull() {
+        String result = mainScrubber.scrub("", ScrubMode.FULL_SCRUBBING);
+        assertNull(result);
+        verifyNoInteractions(digitMock, emailMock);
     }
     @Test
-    void scrub_whitespaceInput_throwsException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> mainScrubber.scrub("   ", ScrubMode.FULL_SCRUBBING));
+    void testScrub_whitespaceInput_returnsNull() {
+        String result = mainScrubber.scrub("   ", ScrubMode.FULL_SCRUBBING);
+        assertNull(result);
+        verifyNoInteractions(digitMock, emailMock);
     }
     @Test
-    void scrub_tabsAndNewlinesInput_throwsException() {
-        assertThrows(IllegalArgumentException.class,
-                () -> mainScrubber.scrub("\n\t", ScrubMode.FULL_SCRUBBING));
+    void testScrub_tabsAndNewlinesInput_returnsNull() {
+        String result = mainScrubber.scrub("\n\t", ScrubMode.FULL_SCRUBBING);
+        assertNull(result);
+        verifyNoInteractions(digitMock, emailMock);
     }
 
     @Test
@@ -73,7 +77,7 @@ class MainScrubberTest {
     //  Happy Paths
 
     @Test
-    void scrub_fullScrubbing_callsBothInCorrectOrder_andReturnsCorrectResult() {
+    void testScrub_fullScrubbing_callsBothInCorrectOrder_andReturnsCorrectResult() {
         String input = "user@test.com 123";
 
         when(digitMock.scrub(input)).thenReturn("user@test.com XXX");
@@ -88,7 +92,7 @@ class MainScrubberTest {
     }
 
     @Test
-    void scrub_fullScrubbing_withMultipleSensitiveData() {
+    void testScrub_fullScrubbing_withMultipleSensitiveData() {
         String input = "user@test.com 123 another@test.com 456";
 
         when(digitMock.scrub(input))
@@ -112,7 +116,7 @@ class MainScrubberTest {
     //  ONLY DIGITS 
 
     @Test
-    void scrub_onlyDigits_callsOnlyDigitScrubber_andReturnsResult() {
+    void testScrub_onlyDigits_callsOnlyDigitScrubber_andReturnsResult() {
         String input = "123";
         when(digitMock.scrub(input)).thenReturn("XXX");
 
@@ -128,7 +132,7 @@ class MainScrubberTest {
     //  ONLY EMAILS 
 
     @Test
-    void scrub_onlyEmails_callsOnlyEmailScrubber_andReturnsResult() {
+    void testScrub_onlyEmails_callsOnlyEmailScrubber_andReturnsResult() {
         String input = "user@test.com";
         when(emailMock.scrub(input)).thenReturn("[EMAIL_HIDDEN]");
 
@@ -144,7 +148,7 @@ class MainScrubberTest {
     //  Edge Case 
 
     @Test
-    void scrub_fullScrubbing_whenNoChanges_returnsSameString() {
+    void testScrub_fullScrubbing_whenNoChanges_returnsSameString() {
         String input = "hello";
 
         when(digitMock.scrub(input)).thenReturn("hello");
@@ -159,7 +163,7 @@ class MainScrubberTest {
     }
 
     @Test
-    void scrub_fullScrubbing_emailWithDigits() {
+    void testScrub_fullScrubbing_emailWithDigits() {
         String input = "user123@test.com";
 
         when(digitMock.scrub(input)).thenReturn("userXXX@test.com");
@@ -175,7 +179,7 @@ class MainScrubberTest {
     }
 
     @Test
-    void scrub_fullScrubbing_emptyAfterProcessing() {
+    void testScrub_fullScrubbing_emptyAfterProcessing() {
         String input = "test@test.com";
 
         when(digitMock.scrub(input)).thenReturn("test@test.com");
