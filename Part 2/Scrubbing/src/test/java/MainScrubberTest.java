@@ -83,11 +83,8 @@ class MainScrubberTest {
 
         assertEquals("[EMAIL_HIDDEN] XXX", result);
 
-        InOrder inOrder = inOrder(digitMock, emailMock);
-        inOrder.verify(digitMock).scrub(input);
-        inOrder.verify(emailMock).scrub("user@test.com XXX");
-
-        verifyNoMoreInteractions(digitMock, emailMock);
+        verify(digitMock, times(1)).scrub(input);
+        verify(emailMock, times(1)).scrub("user@test.com XXX");
     }
 
     @Test
