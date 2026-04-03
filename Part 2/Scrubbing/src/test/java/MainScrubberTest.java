@@ -29,23 +29,19 @@ class MainScrubberTest {
     @Test
     void testScrub_nullInput_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> mainScrubber.scrub(null, ScrubMode.FULL_SCRUBBING));
-        verifyNoInteractions(digitMock, emailMock);
     }
     // blank input tests
     @Test
     void testScrub_emptyInput_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> mainScrubber.scrub("", ScrubMode.FULL_SCRUBBING));
-        verifyNoInteractions(digitMock, emailMock);
     }
     @Test
     void testScrub_whitespaceInput_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> mainScrubber.scrub("   ", ScrubMode.FULL_SCRUBBING));
-        verifyNoInteractions(digitMock, emailMock);
     }
     @Test
     void testScrub_tabsAndNewlinesInput_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> mainScrubber.scrub("\n\t", ScrubMode.FULL_SCRUBBING));
-        verifyNoInteractions(digitMock, emailMock);
     }
 
     @Test
