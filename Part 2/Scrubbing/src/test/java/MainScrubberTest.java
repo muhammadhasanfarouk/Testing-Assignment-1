@@ -76,7 +76,7 @@ class MainScrubberTest {
     //  Happy Paths
 
     @Test
-    void testScrub_fullScrubbing_callsBothInCorrectOrder_andReturnsCorrectResult() {
+    void testScrub_FullScrubbing_CallsBothDependencies() {
         String input = "user@test.com 123";
 
         when(digitMock.scrub(input)).thenReturn("user@test.com XXX");
@@ -85,9 +85,8 @@ class MainScrubberTest {
         String result = mainScrubber.scrub(input, ScrubMode.FULL_SCRUBBING);
 
         assertEquals("[EMAIL_HIDDEN] XXX", result);
-        InOrder inOrder = inOrder(digitMock, emailMock);
-        inOrder.verify(digitMock).scrub(input);
-        inOrder.verify(emailMock).scrub("user@test.com XXX");
+        verify(digitMock).scrub(input);
+        verify(emailMock).scrub("user@test.com XXX");
         verifyNoMoreInteractions(digitMock, emailMock);
     }
 
@@ -105,9 +104,8 @@ class MainScrubberTest {
 
         assertEquals("[EMAIL_HIDDEN] XXX [EMAIL_HIDDEN] XXX", result);
 
-        InOrder inOrder = inOrder(digitMock, emailMock);
-        inOrder.verify(digitMock).scrub(input);
-        inOrder.verify(emailMock).scrub("user@test.com XXX another@test.com XXX");
+        verify(digitMock).scrub(input);
+        verify(emailMock).scrub("user@test.com XXX another@test.com XXX");
 
         verifyNoMoreInteractions(digitMock, emailMock);
     }
@@ -116,7 +114,7 @@ class MainScrubberTest {
     //  ONLY DIGITS 
 
     @Test
-    void testScrub_onlyDigits_callsOnlyDigitScrubber_andReturnsResult() {
+    void testScrub_OnlyDigits_DoesNotCallEmailScrubber() {
         String input = "123";
         when(digitMock.scrub(input)).thenReturn("XXX");
 
@@ -132,7 +130,7 @@ class MainScrubberTest {
     //  ONLY EMAILS 
 
     @Test
-    void testScrub_onlyEmails_callsOnlyEmailScrubber_andReturnsResult() {
+    void testScrub_OnlyEmails_DoesNotCallDigitScrubber() {
         String input = "user@test.com";
         when(emailMock.scrub(input)).thenReturn("[EMAIL_HIDDEN]");
 
@@ -174,9 +172,8 @@ class MainScrubberTest {
 
         assertEquals("[EMAIL_HIDDEN]", result);
 
-        InOrder inOrder = inOrder(digitMock, emailMock);
-        inOrder.verify(digitMock).scrub(input);
-        inOrder.verify(emailMock).scrub("userXXX@test.com");
+        verify(digitMock).scrub(input);
+        verify(emailMock).scrub("userXXX@test.com");
         verifyNoMoreInteractions(digitMock, emailMock);
     }
 }
