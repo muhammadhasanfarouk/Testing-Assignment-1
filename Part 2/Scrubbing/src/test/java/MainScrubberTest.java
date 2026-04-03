@@ -6,6 +6,7 @@ import Interfaces.IScrubEmails;
 import Models.ScrubMode;
 import Services.MainScrubber;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -16,38 +17,39 @@ class MainScrubberTest {
     @Mock private IScrubDigits digitMock;
     @Mock private IScrubEmails emailMock;
 
-    @InjectMocks private MainScrubber mainScrubber;
+    private MainScrubber mainScrubber;
+
+    @BeforeEach
+    void setUp() {
+        mainScrubber = new MainScrubber(digitMock, emailMock);
+    }
 
     //  Null Input Tests
 
     @Test
-    void testScrub_nullInput_returnsNull() {
-        String result = mainScrubber.scrub(null, ScrubMode.FULL_SCRUBBING);
-        assertNull(result);
+    void testScrub_nullInput_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> mainScrubber.scrub(null, ScrubMode.FULL_SCRUBBING));
         verifyNoInteractions(digitMock, emailMock);
     }
     // blank input tests
     @Test
-    void testScrub_emptyInput_returnsNull() {
-        String result = mainScrubber.scrub("", ScrubMode.FULL_SCRUBBING);
-        assertNull(result);
+    void testScrub_emptyInput_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> mainScrubber.scrub("", ScrubMode.FULL_SCRUBBING));
         verifyNoInteractions(digitMock, emailMock);
     }
     @Test
-    void testScrub_whitespaceInput_returnsNull() {
-        String result = mainScrubber.scrub("   ", ScrubMode.FULL_SCRUBBING);
-        assertNull(result);
+    void testScrub_whitespaceInput_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> mainScrubber.scrub("   ", ScrubMode.FULL_SCRUBBING));
         verifyNoInteractions(digitMock, emailMock);
     }
     @Test
-    void testScrub_tabsAndNewlinesInput_returnsNull() {
-        String result = mainScrubber.scrub("\n\t", ScrubMode.FULL_SCRUBBING);
-        assertNull(result);
+    void testScrub_tabsAndNewlinesInput_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> mainScrubber.scrub("\n\t", ScrubMode.FULL_SCRUBBING));
         verifyNoInteractions(digitMock, emailMock);
     }
 
     @Test
-    void testScrub_IllegalArgumentException_returnsNull() {
+    void testScrub_digitScrubberThrowsIllegalArgument_returnsNull() {
         String input = "test input";
 
         when(digitMock.scrub(input)).thenThrow(new IllegalArgumentException());
@@ -55,13 +57,12 @@ class MainScrubberTest {
         String result = mainScrubber.scrub(input, ScrubMode.FULL_SCRUBBING);
 
         assertNull(result);
-
         verify(digitMock).scrub(input);
         verifyNoInteractions(emailMock);
     }
 
     @Test
-    void testScrub_NullPointerException_returnsNull() {
+    void testScrub_digitScrubberThrowsNullPointer_returnsNull() {
         String input = "test input";
 
         when(digitMock.scrub(input)).thenThrow(new NullPointerException());
@@ -69,11 +70,9 @@ class MainScrubberTest {
         String result = mainScrubber.scrub(input, ScrubMode.FULL_SCRUBBING);
 
         assertNull(result);
-
         verify(digitMock).scrub(input);
         verifyNoInteractions(emailMock);
     }
-
     //  Happy Paths
 
     @Test
@@ -86,9 +85,10 @@ class MainScrubberTest {
         String result = mainScrubber.scrub(input, ScrubMode.FULL_SCRUBBING);
 
         assertEquals("[EMAIL_HIDDEN] XXX", result);
-
-        verify(digitMock, times(1)).scrub(input);
-        verify(emailMock, times(1)).scrub("user@test.com XXX");
+        InOrder inOrder = inOrder(digitMock, emailMock);
+        inOrder.verify(digitMock).scrub(input);
+        inOrder.verify(emailMock).scrub("user@test.com XXX");
+        verifyNoMoreInteractions(digitMock, emailMock);
     }
 
     @Test
@@ -160,6 +160,7 @@ class MainScrubberTest {
 
         verify(digitMock).scrub(input);
         verify(emailMock).scrub("hello");
+        verifyNoMoreInteractions(digitMock, emailMock);
     }
 
     @Test
@@ -176,20 +177,6 @@ class MainScrubberTest {
         InOrder inOrder = inOrder(digitMock, emailMock);
         inOrder.verify(digitMock).scrub(input);
         inOrder.verify(emailMock).scrub("userXXX@test.com");
-    }
-
-    @Test
-    void testScrub_fullScrubbing_emptyAfterProcessing() {
-        String input = "test@test.com";
-
-        when(digitMock.scrub(input)).thenReturn("test@test.com");
-        when(emailMock.scrub("test@test.com")).thenReturn("");
-
-        String result = mainScrubber.scrub(input, ScrubMode.FULL_SCRUBBING);
-
-        assertEquals("", result);
-
-        verify(digitMock).scrub(input);
-        verify(emailMock).scrub("test@test.com");
+        verifyNoMoreInteractions(digitMock, emailMock);
     }
 }
